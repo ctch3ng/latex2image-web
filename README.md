@@ -18,6 +18,8 @@ The application is accessible at [https://latex2image.joeraut.com](https://latex
 
 I made use of Ubuntu 18.04. Other Linux distributions should work without problems.
 
+**2020-05-09 Confirmed working on Windows 10 build 18363.778**
+
 ### Docker
 
 [Docker CE](https://docs.docker.com/install/linux/docker-ce/ubuntu/) with [non-root user support](https://docs.docker.com/install/linux/linux-postinstall/#manage-docker-as-a-non-root-user).
