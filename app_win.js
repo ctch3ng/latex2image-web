@@ -81,7 +81,6 @@ app.post('/convert', function (req, res) {
                 if (/\\\\(?!$)/.test(eqnInput) && !eqnInput.includes("&")) { // if any "\\" not at EOF, unless intentionally aligned with &
                     eqnInput = '&' + eqnInput.replace(/\\\\(?!$)/g, "\\\\&"); // replace any "\\" not at EOF with "\\&", to enforce left alignment
                 }
-                
                 shell.mkdir(`${tempDirRoot}`);
                 
                 const document = documentTemplate.replace('EQUATION', eqnInput);
@@ -101,8 +100,8 @@ app.post('/convert', function (req, res) {
                     //console.log(finalDockerCMD); // for debugging
                     if (fs.existsSync(`${tempDirRoot}\\equation.svg`)) {
                         if (fileFormat === 'svg') { // Converting to SVG, no further processing required
-                            shell.cp(`${tempDirRoot}\\equation.svg`, `${outputDir}\\img.svg`);
-                            result.imageURL = `${httpOutputURL}img.svg`;
+                            shell.cp(`${tempDirRoot}\\equation.svg`, `${outputDir}\\img-${id}.svg`);
+                            result.imageURL = `${httpOutputURL}img-${id}.svg`;
                         } else {
                             
                             // Convert svg to png/jpg
@@ -111,21 +110,21 @@ app.post('/convert', function (req, res) {
                             if (fileFormat === 'jpg') { // Add a white background for jpg images
                                 finalSvgToImageCMD += ' "svg {background: white}"';
                             }
-                            console.log(finalSvgToImageCMD); // for debugging
+                            //console.log(finalSvgToImageCMD); // for debugging
                             shell.exec(finalSvgToImageCMD);
 
                             // Ensure conversion was successful; eg. fails if `svgexport` or `imagemin` is not installed
-                            if (fs.existsSync(`${currentDir}\\${tempDirRoot}\\equation.${fileFormat}`)) {
+                            if (fs.existsSync(`${tempDirRoot}\\equation.${fileFormat}`)) {
                                 // Compress the resultant image
                                 let finalImageMinCMD = imageMinCMD.replace('IN_FILE_NAME', `${tempDirRoot}/equation.${fileFormat}`);
                                 finalImageMinCMD = finalImageMinCMD.replace('OUT_FILE_NAME', `${tempDirRoot}/equation_compressed.${fileFormat}`);
-                                console.log(finalImageMinCMD); // for debugging
+                                //console.log(finalImageMinCMD); // for debugging
                                 shell.exec(finalImageMinCMD);
                                 
                                 // Final image
-                                shell.cp(`${currentDir}\\${tempDirRoot}\\equation_compressed.${fileFormat}`, `${currentDir}\\${outputDir}\\img.${fileFormat}`);
+                                shell.cp(`${tempDirRoot}\\equation_compressed.${fileFormat}`, `${outputDir}\\img-${id}.${fileFormat}`);
                                 
-                                result.imageURL = `${httpOutputURL}img.${fileFormat}`;
+                                result.imageURL = `${httpOutputURL}img-${id}.${fileFormat}`;
                             } else {
                                 result.error = `Error converting SVG file to ${fileFormat.toUpperCase()} image.`;
                             }
@@ -134,7 +133,7 @@ app.post('/convert', function (req, res) {
                         result.error = 'Error converting LaTeX to image. Please ensure the input is valid.';
                     }
                     
-                    //shell.rm('-r', `${tempDirRoot}`); // Delete temporary files for this conversion
+                    shell.rm('-r', `${tempDirRoot}`); // Delete temporary files for this conversion
                     
                     res.end(JSON.stringify(result));
                 });
