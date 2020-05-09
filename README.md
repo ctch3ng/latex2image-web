@@ -1,4 +1,4 @@
-# LaTeX2Image
+# LaTeX2Image **(now works in Windows as well)**
 
 ![Image](screenshots/main.png)
 
@@ -36,6 +36,8 @@ docker pull blang/latex:ubuntu
 
 I made use of v10.14.2, anything newer should be fine.
 
+**2020-05-09 Confirmed working on Node.js v10.20.1**
+
 After cloning or downloading this project, run the following to install local dependencies from npm:
 
 ```
@@ -52,12 +54,32 @@ npm install svgexport -g
 npm install imagemin-cli -g
 ```
 
+**For Windows users**, in `%AppData%\npm\node_modules\svgexport\render.js`
+
+Change the line 
+
+```
+await page.goto('file://' + encodeURI(svgfile))
+```
+
+into
+
+```
+await page.goto('file:///' + encodeURI(svgfile).replace(new RegExp(/%5C/g),"/"))
+```
+
 ## Usage
 
 To run:
 
 ```
 node app.js
+```
+
+**For Windows users**, run:
+
+```
+node app_win.js
 ```
 
 The web interface will be accessible at `http://localhost:3001` by default. The port and HTTP URL can be modified inside `app.js`.
@@ -68,7 +90,7 @@ Enter a LaTeX equation, for example `\frac{a}{b}`, and press Convert. The result
 
 LaTeX is powerful, with the reading and writing of external files and execution of terminal commands possible. It was decided that a new isolated Docker container be launched for every conversion.
 
-The container is only able to access the local `temp/<id>/` directory and has no network access.
+The container is only able to access the local `temp/<id>/` **(`temp` in Windows)** directory and has no network access.
 
 Additionally, the compilation process will be killed after 5 seconds if not complete; this is to safeguard against infinite loops and other troublesome LaTeX quirks.
 
@@ -84,12 +106,13 @@ Commands used:
 ## Notes
 
 * The directories `temp/` and `output/` will be generated automatically inside the `latex2image-web/` directory upon first launch.
-* `temp/` stores temporary `.tex`, `.dvi`, and `.svg` files during compilation in an inner `temp/<id>/` directory, which is deleted upon completion of the conversion.
+* `temp/` stores temporary `.tex`, `.dvi`, and `.svg` files during compilation in an inner `temp/<id>/` directory **(`temp/` in Windows)**, which is deleted upon completion of the conversion.
 * Final output images are stored in `output/`, and are never deleted.
 
 ## Authors
 
 * Joseph Rautenbach - [joeraut](https://github.com/joeraut)
+* CT Cheng - [ctch3ng](https://github.com/ctch3ng) -> **app_win.js**, **README.md**
 
 ## Issues
 
