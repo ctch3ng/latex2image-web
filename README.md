@@ -114,7 +114,7 @@ Commands used:
 ## Authors
 
 * Joseph Rautenbach - [joeraut](https://github.com/joeraut)
-* CT Cheng - [ctch3ng](https://github.com/ctch3ng) -> **app_win.js**, **README.md**
+* CT Cheng - [ctch3ng](https://github.com/ctch3ng) -> **app_win.js**, **README.md**, **static/index.html**
 
 ## Issues
 
